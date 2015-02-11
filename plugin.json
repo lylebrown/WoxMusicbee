@@ -1,0 +1,11 @@
+{
+	"ID":"C96FC7A6AF7211E487687EFB1D5D46B0",
+	"ActionKeyword":"mb",
+	"Name":"Musicbee",
+	"Description":"Play or add music from Wox",
+	"Author":"Lyle Brown",
+	"Version":"0.1.0",
+	"Language":"python",
+	"Website":"http://www.lylebrown.com",
+	"ExecuteFileName":"main.py"
+}
