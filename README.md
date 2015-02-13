@@ -1,5 +1,5 @@
 # WoxMusicbee
-Musicbee plugin for the Wox Launcher. Add and play tracks in Musicbee from Wox!
+[Musicbee](http://getmusicbee.com/) plugin for the [Wox Launcher](https://www.getwox.com/). Add and play tracks in Musicbee from Wox!
 
 ![Screenshot of Wox Musicbee](https://raw.githubusercontent.com/lylebrown/WoxMusicbee/master/Screenshot.png)
 
