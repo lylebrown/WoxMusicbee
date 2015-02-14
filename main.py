@@ -1,145 +1,96 @@
 from musicbeeipc import *
 from wox import Wox,WoxAPI
 
-mbIPC = MusicBeeIPC()
 
-'''
-class MusicBeeMain():
+class FileOperations:
+    def __init__(self, filepath):
+        self.filepath = filepath
+        self.mbIPC = MusicBeeIPC()
 
-    def search(self, searchtype, arg):
-        searchtypetech = ""
-        if searchtype.lower() in ["title", "song", "track"]:
-            searchtypetech = "Title"
-        elif searchtype.lower() in ["artist", "band", "singer"]:
-            searchtypetech = "Artist"
-        elif searchtype.lower() in ["album", "cd"]:
-            searchtypetech = "Album"
-        else:
-            searchtypetech = "Title"
+    def play(self):
+        self.mbIPC.play_now(self.filepath)
+        WoxAPI.change_query("")
+        return []
 
-        resultlist = []
-        for result in mbIPC.search(str(arg), "Contains", [searchtypetech]):
-            resultlist.append(result)
-        return resultlist
+    def add(self):
+        self.mbIPC.queue_next(self.filepath)
+        WoxAPI.change_query("")
+        return []
 
-    def play(self, filepath):
-        return mbIPC.play_now(filepath)
+    def artist(self):
+        return self.mbIPC.library_get_file_tag(self.filepath, 31)
 
-    def add(self, filepath):
-        return mbIPC.queue_next(filepath)
+    def title(self):
+        return self.mbIPC.library_get_file_tag(self.filepath, 39)
 
-    def query(self, query):
-        command = query.split(" ")[0].lower()  # "play" or "add"
-        argtype = query.split(" ")[1].lower()  # "track", "artist", "album", etc.
-        argument = []
-        for word in query.split(" ")[2:]:
-            argument.append(word.lower())
+    def artwork(self):
+        return self.mbIPC.library_get_artwork_url(self.filepath, 0)
 
-        if command == "play":
-            return self.play(self.search(argtype, argument))
-        elif command == "add":
-            return self.add(self.search(argtype, argument))
+    def jsoncreate(self, function):
+        json = {
+            "Title": self.artist() + " - " + self.title(),
+            "Subtitle": self.filepath,
+            "IcoPath": self.artwork(),
+            "JsonRPCAction": {
+                "method": str(function),
+                "parameters": [self.filepath.replace("\\", "\\\\")],
+                "dontHideAfterAction": False
+                }
+            }
 
-        # debug
-        # print("Command: " + command + "\nArgumentType: " + argtype + "\nArgument:  " + argument + "\n")
-'''
-
-# mb.query("play artist alice")
-# print mb.search("title","fake it")[0]
-# for result in mbIPC.search("come", "Contains", ["Title"]):
-#    print result
+        return json
 
 
 class MusicBee(Wox):
-    def query(self, key):
+    def __init__(self):
+        self.mbIPC = MusicBeeIPC()
+        Wox.__init__(self)
+
+    @staticmethod
+    def actionparse(action):
+        action = action.lower()
+        playlist = ["play"]
+        addlist = ["add"]
+        if action in playlist:
+            return "play"
+        if action in addlist:
+            return "add"
+        else:
+            return "play"
+
+    @staticmethod
+    def tagparse(tag):
+        tag = tag.lower()
+        titlelist = ["title", "song", "track"]
+        artistlist = ["artist", "band", "singer"]
+        albumlist = ["album", "cd", "record"]
+
+        if tag in titlelist:
+            return ["Title"]
+        if tag in artistlist:
+            return ["Artist"]
+        if tag in albumlist:
+            return ["Album"]
+        else:
+            return ["Title"]
+
+    def argparser(self, key):
         results = []
         arguments = key.split(" ")
         if len(arguments) > 2:
-            if arguments[0].lower() == "play":
-                if arguments[1].lower() in ["title", "song", "track"]:
-                    for result in mbIPC.search(" ".join(arguments[2:]), "Contains", ["Title"]):
-                        results.append({"Title": mbIPC.library_get_file_tag(result, 31) + " - " +
-                                                 mbIPC.library_get_file_tag(result, 39),
-                                        "Subtitle": result,
-                                        "IcoPath": mbIPC.library_get_artwork_url(result, 0),
-                                        "JsonRPCAction": {
-                                            "method": "play",
-                                            "parameters": [result.replace("\\", "\\\\")],
-                                            "dontHideAfterAction": False
-                                            }
-                                        })
-                elif arguments[1].lower() in ["artist", "band", "singer"]:
-                    for result in mbIPC.search(" ".join(arguments[2:]), "Contains", ["Artist"]):
-                        results.append({"Title": mbIPC.library_get_file_tag(result, 31) + " - " +
-                                                 mbIPC.library_get_file_tag(result, 39),
-                                        "Subtitle": result,
-                                        "IcoPath": mbIPC.library_get_artwork_url(result, 0),
-                                        "JsonRPCAction": {
-                                            "method": "play",
-                                            "parameters": [result.replace("\\", "\\\\")],
-                                            "dontHideAfterAction": False
-                                            }
-                                        })
-                elif arguments[1].lower() in ["album", "record", "cd"]:
-                    for result in mbIPC.search(" ".join(arguments[2:]), "Contains", ["Album"]):
-                        results.append({"Title": mbIPC.library_get_file_tag(result, 31) + " - " +
-                                                 mbIPC.library_get_file_tag(result, 39),
-                                        "Subtitle": result,
-                                        "IcoPath": mbIPC.library_get_artwork_url(result, 0),
-                                        "JsonRPCAction": {
-                                            "method": "play",
-                                            "parameters": [result.replace("\\", "\\\\")],
-                                            "dontHideAfterAction": False
-                                            }
-                                        })
-            elif arguments[0].lower() == "add":
-                if arguments[1].lower() in ["title", "song", "track"]:
-                    for result in mbIPC.search(" ".join(arguments[2:]), "Contains", ["Title"]):
-                        results.append({"Title": mbIPC.library_get_file_tag(result, 31) + " - " +
-                                                 mbIPC.library_get_file_tag(result, 39),
-                                        "Subtitle": result,
-                                        "IcoPath": mbIPC.library_get_artwork_url(result, 0),
-                                        "JsonRPCAction": {
-                                            "method": "add",
-                                            "parameters": [result.replace("\\", "\\\\")],
-                                            "dontHideAfterAction": False
-                                        }
-                        })
-                elif arguments[1].lower() in ["artist", "band", "singer"]:
-                    for result in mbIPC.search(" ".join(arguments[2:]), "Contains", ["Artist"]):
-                        results.append({"Title": mbIPC.library_get_file_tag(result, 31) + " - " +
-                                                 mbIPC.library_get_file_tag(result, 39),
-                                        "Subtitle": result,
-                                        "IcoPath": mbIPC.library_get_artwork_url(result, 0),
-                                        "JsonRPCAction": {
-                                            "method": "add",
-                                            "parameters": [result.replace("\\", "\\\\")],
-                                            "dontHideAfterAction": False
-                                        }
-                        })
-                elif arguments[1].lower() in ["album", "record", "cd"]:
-                    for result in mbIPC.search(" ".join(arguments[2:]), "Contains", ["Album"]):
-                        results.append({"Title": mbIPC.library_get_file_tag(result, 31) + " - " +
-                                                 mbIPC.library_get_file_tag(result, 39),
-                                        "Subtitle": result,
-                                        "IcoPath": mbIPC.library_get_artwork_url(result, 0),
-                                        "JsonRPCAction": {
-                                            "method": "add",
-                                            "parameters": [result.replace("\\", "\\\\")],
-                                            "dontHideAfterAction": False
-                                        }
-                        })
+            action = self.actionparse(arguments[0].lower())
+            tag = self.tagparse(arguments[1].lower())
+            query = " ".join(arguments[2:])
+
+            for result in self.mbIPC.search(query, "Contains", tag):
+                fileops = FileOperations(result)
+                results.append(fileops.jsoncreate(action))
+
         return results
 
-    def play(self, result):
-        mbIPC.play_now(result)
-        WoxAPI.change_query("")
-        return []
+    def query(self, key):
+        return self.argparser(key)
 
-    def add(self, result):
-        mbIPC.queue_next(result)
-        WoxAPI.change_query("")
-        return []
 
 if __name__ == "__main__":
     MusicBee()
