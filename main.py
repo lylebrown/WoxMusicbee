@@ -1,5 +1,5 @@
 from musicbeeipc import *
-from wox import Wox,WoxAPI
+from wox import Wox, WoxAPI
 
 
 class MusicBee(Wox):
@@ -24,7 +24,12 @@ class MusicBee(Wox):
         return self.mbIPC.library_get_file_tag(file_path, 39)
 
     def artwork(self, file_path):
-        return self.mbIPC.library_get_artwork_url(file_path, 0)
+        local_art = self.mbIPC.library_get_artwork_url(file_path, 0)
+        mb_icon = "Images\\pic.png"
+        if ".tmp" not in local_art:
+            return self.mbIPC.library_get_artwork_url(file_path, 0)
+        else:
+            return mb_icon
 
     def json_create(self, function, file_path):
         json = {
