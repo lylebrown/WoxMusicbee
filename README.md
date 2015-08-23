@@ -5,7 +5,7 @@
 
 # Install Guide
 
-Install the [MusicbeeIPC](http://getmusicbee.com/forum/index.php?topic=11492.0) Python SDK in the Wox Python installation. Add the MusicbeeIPC plugin to Musicbee. (Both have been tested at version 2.0.) Copy all files to the Wox plugin directory within a subfolder. Ensure Musicbee is running when using the plugin or there will be no results.
+Install the [MusicbeeIPC](http://getmusicbee.com/forum/index.php?topic=11492.0) Python SDK in the Wox Python installation. Add the MusicbeeIPC plugin to Musicbee (Both have been tested at version 2.0). [Install PyWin32](http://stackoverflow.com/a/31348620). Copy all files to the Wox plugin directory within a subfolder. Ensure Musicbee is running when using the plugin or there will be no results.
 
 # Usage
 
