@@ -23,6 +23,10 @@ class MusicBee(Wox):
     def title(self, file_path):
         return self.mbIPC.library_get_file_tag(file_path, 39)
 
+    def shuffle(self):
+        self.mbIPC.now_playing_list_play_library_shuffled()
+        return []
+
     def artwork(self, file_path):
         local_art = self.mbIPC.library_get_artwork_url(file_path, 0)
         mb_icon = "Images\\pic.png"
@@ -49,11 +53,14 @@ class MusicBee(Wox):
     def action_parse(action):
         action = action.lower()
         play_list = ["play"]
-        add_list = ["add"]
+        add_list = ["add", "queue"]
+        shuffle_list = ["shuffle"]
         if action in play_list:
             return "play"
         if action in add_list:
             return "add"
+        if action in shuffle_list:
+            return "shuffle"
         else:
             return "play"
 
@@ -63,6 +70,7 @@ class MusicBee(Wox):
         title_list = ["title", "song", "track"]
         artist_list = ["artist", "band", "singer"]
         album_list = ["album", "cd", "record"]
+        shuffle_list = ["shuffle", "random", "any"]
 
         if tag in title_list:
             return ["Title"]
@@ -70,6 +78,8 @@ class MusicBee(Wox):
             return ["Artist"]
         if tag in album_list:
             return ["Album"]
+        if tag in shuffle_list:
+            return ["Shuffle"]
         else:
             return ["Title"]
 
@@ -81,8 +91,21 @@ class MusicBee(Wox):
             tag = self.tag_parse(arguments[1].lower())
             query = " ".join(arguments[2:])
 
-            for result in self.mbIPC.search(query, "Contains", tag):
+            for result in self.mbIPC.library_search(query, "Contains", tag):
                 results.append(self.json_create(action, result))
+
+        elif arguments[0] == "shuffle":
+            shuffle_json = {
+                "Title": "Shuffle Library",
+                "Subtitle": "Clear playlist and add entire library in random order",
+                "IcoPath": "Images\\pic.png",
+                "JsonRPCAction": {
+                    "method": "shuffle",
+                    "parameters": [],
+                    "dontHideAfterAction": False
+                }
+            }
+            results.append(shuffle_json)
 
         return results
 
