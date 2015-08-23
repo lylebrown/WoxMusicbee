@@ -5,7 +5,7 @@
 
 # Install Guide
 
-Install the [MusicbeeIPC](http://getmusicbee.com/forum/index.php?topic=11492.0) Python SDK in the Wox Python installation. Add the MusicbeeIPC plugin to Musicbee (Both have been tested at version 2.0). [Install PyWin32](http://stackoverflow.com/a/31348620). Copy all files to the Wox plugin directory within a subfolder. Ensure Musicbee is running when using the plugin or there will be no results.
+Install the [MusicbeeIPC](http://getmusicbee.com/forum/index.php?topic=11492.0) Python SDK in the Wox Python installation. Add the MusicbeeIPC plugin to Musicbee (both have been tested at version 2.0). [Install PyWin32](http://stackoverflow.com/a/31348620) into the Wox Python installation. Copy all files to the Wox plugin directory within a subfolder. Ensure Musicbee is running when using the plugin or there will be no results.
 
 # Usage
 
@@ -17,11 +17,12 @@ Example:
 
 ## Command words
 - Play: Play the selected track immediately
-- Add: Queue the selected track to play next
+- Add (or queue): Queue the selected track to play next
+- Shuffle (or random): Clear playlist and shuffle entire library (no attributes)
 
 ## Attribute words
 At this point in time, all attributes return tracks. In future releases, Artist may return artist results and queue all songs by that artist, etc.
 
 - Title (or song, or track): Searches in the title field
 - Artist (or band, or singer): Searches in the Song Artist field
-- Album (or cd): Searches in the Album field
+- Album (or cd, or record): Searches in the Album field

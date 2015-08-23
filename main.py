@@ -54,7 +54,7 @@ class MusicBee(Wox):
         action = action.lower()
         play_list = ["play"]
         add_list = ["add", "queue"]
-        shuffle_list = ["shuffle"]
+        shuffle_list = ["shuffle", "random"]
         if action in play_list:
             return "play"
         if action in add_list:
@@ -70,7 +70,6 @@ class MusicBee(Wox):
         title_list = ["title", "song", "track"]
         artist_list = ["artist", "band", "singer"]
         album_list = ["album", "cd", "record"]
-        shuffle_list = ["shuffle", "random", "any"]
 
         if tag in title_list:
             return ["Title"]
@@ -78,8 +77,6 @@ class MusicBee(Wox):
             return ["Artist"]
         if tag in album_list:
             return ["Album"]
-        if tag in shuffle_list:
-            return ["Shuffle"]
         else:
             return ["Title"]
 
@@ -94,7 +91,7 @@ class MusicBee(Wox):
             for result in self.mbIPC.library_search(query, "Contains", tag):
                 results.append(self.json_create(action, result))
 
-        elif arguments[0] == "shuffle":
+        elif arguments[0] == "shuffle" or arguments[0] == "random":
             shuffle_json = {
                 "Title": "Shuffle Library",
                 "Subtitle": "Clear playlist and add entire library in random order",
