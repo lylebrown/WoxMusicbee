@@ -12,6 +12,14 @@ class MusicBee(Wox):
         WoxAPI.change_query("")
         return []
 
+    def play_artist(self, artist):
+        results = self.mbIPC.library_search(artist, "Contains", ["Artist"])
+        self.mbIPC.clear_now_playing_list()
+        self.mbIPC.play_now(results[0])
+        for result in results:
+            if result != results[0]:
+                self.mbIPC.queue_next(result)
+
     def add(self, file_path):
         self.mbIPC.queue_next(file_path)
         WoxAPI.change_query("")
@@ -84,12 +92,36 @@ class MusicBee(Wox):
         results = []
         arguments = key.split(" ")
         if len(arguments) > 2:
+            artist_list = ["artist", "band", "singer"]
             action = self.action_parse(arguments[0].lower())
             tag = self.tag_parse(arguments[1].lower())
             query = " ".join(arguments[2:])
 
-            for result in self.mbIPC.library_search(query, "Contains", tag):
-                results.append(self.json_create(action, result))
+            def artist_json_create(artist):
+                json = {
+                    "Title": artist,
+                    "Subtitle": "All tracks",
+                    "IcoPath": "Images\\pic.png",##self.mbIPC.library_get_artist_picture_urls(artist, True),
+                    "JsonRPCAction": {
+                        "method": "play_artist",
+                        "parameters": [artist],
+                        "dontHideAfterAction": False
+                    }
+                }
+                return json
+
+            if arguments[1] in artist_list:
+                ##text_file = open("C:\\Wox\\Plugins\\Wox.Musicbee\\output.txt", "w")
+                artist_results = []
+                for result in self.mbIPC.library_search(query, "Contains", ["Artist"]):
+                    if self.artist(result) not in artist_results:
+                        artist_results.append(self.artist(result))
+                for item in artist_results:
+                    results.append(artist_json_create(item))
+
+            else:
+                for result in self.mbIPC.library_search(query, "Contains", tag):
+                    results.append(self.json_create(action, result))
 
         elif arguments[0] == "shuffle" or arguments[0] == "random":
             shuffle_json = {
