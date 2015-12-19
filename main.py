@@ -1,5 +1,6 @@
 from musicbeeipc import *
 from wox import Wox, WoxAPI
+import getpass
 
 
 class MusicBee(Wox):
@@ -13,7 +14,7 @@ class MusicBee(Wox):
         return []
 
     def play_artist(self, artist):
-        results = self.mbIPC.library_search(artist, "Contains", ["Artist"])
+        results = self.mbIPC.library_search(artist, "Is", ["Artist"])
         self.mbIPC.clear_now_playing_list()
         self.mbIPC.play_now(results[0])
         for result in results:
@@ -101,7 +102,8 @@ class MusicBee(Wox):
                 json = {
                     "Title": artist,
                     "Subtitle": "All tracks",
-                    "IcoPath": "Images\\pic.png",##self.mbIPC.library_get_artist_picture_urls(artist, True),
+                    "IcoPath": "C:\\Users\\" + getpass.getuser() + "\\AppData\\Roaming\\MusicBee\\InternalCache\\ArtistThumbs\\" +
+                        artist + ".png",
                     "JsonRPCAction": {
                         "method": "play_artist",
                         "parameters": [artist],
