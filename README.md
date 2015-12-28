@@ -21,7 +21,7 @@ Example:
 - Shuffle (or random): Clear playlist and shuffle entire library (no attributes)
 
 ## Attribute words
-At this point in time, all attributes return tracks. In future releases, Artist may return artist results and queue all songs by that artist, etc.
+At this point in time, all attributes return tracks. In future releases [(check the beta branch!)](/tree/beta), Artist may return artist results and queue all songs by that artist, etc.
 
 - Title (or song, or track): Searches in the title field
 - Artist (or band, or singer): Searches in the Song Artist field
